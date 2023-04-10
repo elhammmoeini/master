@@ -214,8 +214,8 @@ class main():
         return hook
 
     def RegisterHook(self):
-        self.model.features.register_forward_hook(self.get_activation('last_cnn'))
-        self.model.avgpool.register_forward_hook(self.get_activation('last_pool'))
+        self.model.model.features.register_forward_hook(self.get_activation('last_cnn'))
+        self.model.model.avgpool.register_forward_hook(self.get_activation('last_pool'))
 
     @staticmethod
     def percision(array , idx , label):
