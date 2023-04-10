@@ -1,4 +1,4 @@
-import torch, torchvision, os, random, torchcam, glob, shutil, cv2
+import torch, torchvision, os, random, glob, shutil, cv2
 import numpy as np
 import seaborn as sn
 import pandas as pd
@@ -8,7 +8,6 @@ from tqdm import tqdm
 # from captum.attr import LRP
 from PIL import Image
 from matplotlib.pyplot import imshow
-from torchcam.utils import overlay_mask
 from torchvision.transforms.functional import to_pil_image
 from torch import nn
 from .utils import CustomDataSet,ToCUDA,clone_weights,weights_checker\
@@ -33,6 +32,9 @@ class main():
         self.configs=configs
 
         if state=="validation":
+            import torchcam
+            from torchcam.utils import overlay_mask
+
             self.camapp={}
             self.models={}
             for cam_method in self.configs.CAM:
