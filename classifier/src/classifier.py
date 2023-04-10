@@ -34,7 +34,6 @@ class main():
         if state=="validation":
             import torchcam
             from torchcam.utils import overlay_mask
-
             self.camapp={}
             self.models={}
             for cam_method in self.configs.CAM:
@@ -42,6 +41,7 @@ class main():
                 self.models[cam_method]=self.change_state(state, self.define_and_load_model())
         if state=="kd":
             self.model=self.change_state(state, self.define_and_load_model())
+            print(self.model)
             self.activation={}
             self.RegisterHook()
 
