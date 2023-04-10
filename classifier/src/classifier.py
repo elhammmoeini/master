@@ -41,7 +41,7 @@ class main():
                 self.models[cam_method]=self.change_state(state, self.define_and_load_model())
         if state=="kd":
             self.model=self.change_state(state, self.define_and_load_model())
-            print(self.model)
+            # print(self.model)
             self.activation={}
             self.RegisterHook()
 
