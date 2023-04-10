@@ -1,0 +1,22 @@
+MODEL: "efficientnet_v2_s"
+CAM: ["XGradCAM","GradCAM"]
+CAM_PATH: "/content/drive/MyDrive/outputs/polyp"
+SEGMENTS_PATH: "/content/drive/MyDrive/Colab notebooks/polyp/masks"
+CLASSES: 2
+LR: 0.00005
+DESIRED_ACCURACY: 0.99
+TRANSFER_LEARNING: True
+CHECKPOINT_PATH : "/content/drive/MyDrive/weights/polyp"
+LOAD_CHECKPOINT: True
+TRAIN_PATH: "/content/drive/MyDrive/Colab notebooks/polyp/train"
+VALIDATION_PATH: "/content/drive/MyDrive/Colab notebooks/polyp/validation"
+IMAGE_SIZE: 384
+NUM_OF_WORKERS: 2
+BATCH_SIZE: 16
+LABEL_SMOOTHING: 0.1
+MAX_EPOCHS: 1000
+THRESHOLD_EPOCH: 100
+T_MAX_COEFFICIENT: 10
+BASE_LR: 0.000000000001
+GPU: 0
+HEATMAP_THRESH: 100

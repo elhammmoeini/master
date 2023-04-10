@@ -1,0 +1,20 @@
+MODEL: "efficientnet_v2_s"
+CAM: "GradCAM"
+CAM_PATH: "/content/drive/MyDrive/outputs/brain"
+CLASSES: 3
+LR: 0.00005
+DESIRED_ACCURACY: 0.99
+TRANSFER_LEARNING: False
+CHECKPOINT_PATH : "/content/drive/MyDrive/weights/brain"
+LOAD_CHECKPOINT: True
+PARALLEL: False
+TRAIN_PATH: "/content/Splitted/train"
+VALIDATION_PATH: "/content/Splitted/val"
+IMAGE_SIZE: 224
+NUM_OF_WORKERS: 2
+BATCH_SIZE: 64
+LABEL_SMOOTHING: 0.1
+MAX_EPOCHS: 10000
+THRESHOLD_EPOCH: 100
+T_MAX_COEFFICIENT: 10
+GPU: 0

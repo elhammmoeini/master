@@ -1,0 +1,20 @@
+MODEL: "efficientnet_v2_s"
+CAM: "GradCAM"
+CAM_PATH: "/content/drive/MyDrive/outputs/chest"
+CLASSES: 2
+LR: 0.00005
+DESIRED_ACCURACY: 0.5
+TRANSFER_LEARNING: False
+CHECKPOINT_PATH : "/content/drive/MyDrive/weights/chest"
+LOAD_CHECKPOINT: True
+PARALLEL: False
+TRAIN_PATH: "/content/chest/train"
+VALIDATION_PATH: "/content/chest/val"
+IMAGE_SIZE: 384
+NUM_OF_WORKERS: 2
+BATCH_SIZE: 64
+LABEL_SMOOTHING: 0.1
+MAX_EPOCHS: 1000
+THRESHOLD_EPOCH: 100
+T_MAX_COEFFICIENT: 10
+GPU: 0
