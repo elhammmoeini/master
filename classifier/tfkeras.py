@@ -114,6 +114,7 @@ import cv2
 
 tf.compat.v1.disable_eager_execution()
 model = innvestigate.model_wo_softmax(model)
+print(model.summary())
 analyzer = innvestigate.create_analyzer("deep_taylor", model)
 
 img = cv2.imread(address)
