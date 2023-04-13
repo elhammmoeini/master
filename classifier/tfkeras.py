@@ -138,4 +138,5 @@ a /= np.max(np.abs(a))
 print("################################ yay #################################")
 # Plot
 plt.imshow(a[0], cmap="seismic", clim=(-1, 1))
+plt.savefig(a[0], "res.png")
 plt.show()
