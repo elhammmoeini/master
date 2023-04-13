@@ -112,7 +112,7 @@ import cv2
 
 tf.compat.v1.disable_eager_execution()
 
-analyzer = innvestigate.create_analyzer("lrp", model)
+analyzer = innvestigate.analyzer.relevance_based.relevance_analyzer.BaselineLRPZ
 
 img = cv2.imread(address)
 
