@@ -10,6 +10,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras import layers
 from tensorflow.keras.optimizers import Adam
 from sklearn.metrics import confusion_matrix
+import matplotlib.pyplot as plt
 
 address = input("image address : ")
 class AttributeDict(dict):
@@ -112,7 +113,7 @@ import cv2
 
 tf.compat.v1.disable_eager_execution()
 model = innvestigate.model_wo_softmax(model)
-analyzer = innvestigate.create_analyzer("gradient", model)
+analyzer = innvestigate.create_analyzer("deep_taylor", model)
 
 img = cv2.imread(address)
 
@@ -120,4 +121,8 @@ inp = cv2.resize(img, (IMG_SIZE, IMG_SIZE))
 rgb = cv2.cvtColor(inp, cv2.COLOR_BGR2RGB)
 rgb_tensor = tf.convert_to_tensor(rgb, dtype=tf.float32)
 rgb_tensor = tf.expand_dims(rgb_tensor , 0)
-analysis = analyzer.analyze(rgb_tensor)
+a = analyzer.analyze(rgb_tensor)
+a = a.sum(axis=np.argmax(np.asarray(a.shape) == 3))
+a /= np.max(np.abs(a))
+# Plot
+plt.imshow(a[0], cmap="seismic", clim=(-1, 1))
