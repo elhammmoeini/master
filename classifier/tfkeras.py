@@ -13,12 +13,16 @@ from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
 import sys
 
-print(sys.getrecursionlimit())
 
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--img', type=str, required=True)
+parser.add_argument('--rec', type=str, required=True)
 args = parser.parse_args()
+
+print(sys.getrecursionlimit())
+sys.setrecursionlimit(int(args.rec))
+print(sys.getrecursionlimit())
 
 class AttributeDict(dict):
     __getattr__ = dict.__getitem__
