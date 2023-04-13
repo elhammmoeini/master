@@ -1,6 +1,6 @@
 import os, yaml
 import tensorflow as tf
-from keras.applications import EfficientNetV2S
+from tensorflow.keras.applications import EfficientNetV2S
 import tensorflow_datasets as tfds
 from tqdm import tqdm
 import numpy as np
