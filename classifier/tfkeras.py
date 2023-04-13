@@ -126,6 +126,8 @@ rgb_tensor = tf.expand_dims(rgb_tensor , 0)
 a = analyzer.analyze(rgb_tensor)
 a = a.sum(axis=np.argmax(np.asarray(a.shape) == 3))
 a /= np.max(np.abs(a))
+
+print("################################ yay #################################")
 # Plot
 plt.imshow(a[0], cmap="seismic", clim=(-1, 1))
 plt.show()
