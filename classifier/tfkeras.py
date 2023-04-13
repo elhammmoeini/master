@@ -26,85 +26,85 @@ batch_size = configs.BATCH_SIZE
 IMG_SIZE = configs.IMAGE_SIZE
 size = (IMG_SIZE, IMG_SIZE)
 
-train_ds = tf.keras.preprocessing.image_dataset_from_directory(
-  configs.TRAIN_PATH,
-  image_size=size,
-  batch_size=batch_size)
+# train_ds = tf.keras.preprocessing.image_dataset_from_directory(
+#   configs.TRAIN_PATH,
+#   image_size=size,
+#   batch_size=batch_size)
 
-valid_ds = tf.keras.preprocessing.image_dataset_from_directory(
-  configs.VALIDATION_PATH,
-  image_size=size,
-  batch_size=batch_size)
+# valid_ds = tf.keras.preprocessing.image_dataset_from_directory(
+#   configs.VALIDATION_PATH,
+#   image_size=size,
+#   batch_size=batch_size)
 
-class_names = list(train_ds.class_names)
-print(class_names)
-NUM_CLASSES = len(class_names)
-open("classes.txt", "w").write("\n".join(class_names))
+# class_names = list(train_ds.class_names)
+# print(class_names)
+# NUM_CLASSES = len(class_names)
+# open("classes.txt", "w").write("\n".join(class_names))
 
-train_ds = train_ds.map(lambda x, y: (x, tf.one_hot(y, depth=NUM_CLASSES)))
-valid_ds = valid_ds.map(lambda x, y: (x, tf.one_hot(y, depth=NUM_CLASSES)))
+# train_ds = train_ds.map(lambda x, y: (x, tf.one_hot(y, depth=NUM_CLASSES)))
+# valid_ds = valid_ds.map(lambda x, y: (x, tf.one_hot(y, depth=NUM_CLASSES)))
 
-class GCAdam(Adam):
-    def get_gradients(self, loss, params):
-        # We here just provide a modified get_gradients() function since we are
-        # trying to just compute the centralized gradients.
+# class GCAdam(Adam):
+#     def get_gradients(self, loss, params):
+#         # We here just provide a modified get_gradients() function since we are
+#         # trying to just compute the centralized gradients.
 
-        grads = []
-        gradients = super().get_gradients()
-        for grad in gradients:
-            grad_len = len(grad.shape)
-            if grad_len > 1:
-                axis = list(range(grad_len - 1))
-                grad -= tf.reduce_mean(grad, axis=axis, keep_dims=True)
-            grads.append(grad)
+#         grads = []
+#         gradients = super().get_gradients()
+#         for grad in gradients:
+#             grad_len = len(grad.shape)
+#             if grad_len > 1:
+#                 axis = list(range(grad_len - 1))
+#                 grad -= tf.reduce_mean(grad, axis=axis, keep_dims=True)
+#             grads.append(grad)
 
-        return grads
+#         return grads
     
 def build_model():
     inputs = layers.Input(shape=(IMG_SIZE, IMG_SIZE, 3))
     x = inputs
     model = EfficientNetV2S(weights="/content/drive/MyDrive/kd_effi_v2s.h5", include_top=True, input_tensor=x, classes=2)
-    outputs = model.output
-    model = tf.keras.Model(inputs, outputs, name="kd_effi_v2s")
+    # outputs = model.output
+    # model = tf.keras.Model(inputs, outputs, name="kd_effi_v2s")
     
-    optimizer = GCAdam(learning_rate=1e-2)
-    model.compile(
-        optimizer=optimizer, loss="categorical_crossentropy", metrics=["accuracy"]
-    )
+    # optimizer = GCAdam(learning_rate=1e-2)
+    # model.compile(
+    #     optimizer=optimizer, loss="categorical_crossentropy", metrics=["accuracy"]
+    # )
     return model
 
-callback = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
+# callback = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
 model = build_model()
 
-epochs = 50
+# epochs = 50
 # hist = model.fit(train_ds, epochs=epochs, validation_data=valid_ds, callbacks=[callback], verbose=1)
 # model.save("kd_effi_v2s.h5")
 
-true_categories = []
-predicted_categories = []
-false_prediction = dict()
-for x, y in valid_ds.unbatch():
-    true_categories.append(y.numpy().argmax())
-    predicted_categories.append(model.predict(tf.reshape(x, (1, IMG_SIZE, IMG_SIZE, 3))).argmax(axis=1)[0])
-    if true_categories[-1] != predicted_categories[-1]:
-        false_prediction[class_names[true_categories[-1]]] = [x.numpy(), class_names[predicted_categories[-1]]]
+# true_categories = []
+# predicted_categories = []
+# false_prediction = dict()
+# for x, y in valid_ds.unbatch():
+#     true_categories.append(y.numpy().argmax())
+#     predicted_categories.append(model.predict(tf.reshape(x, (1, IMG_SIZE, IMG_SIZE, 3))).argmax(axis=1)[0])
+#     if true_categories[-1] != predicted_categories[-1]:
+#         false_prediction[class_names[true_categories[-1]]] = [x.numpy(), class_names[predicted_categories[-1]]]
 
-confusion_matrix = confusion_matrix(true_categories, predicted_categories, labels=list(range(NUM_CLASSES)))
+# confusion_matrix = confusion_matrix(true_categories, predicted_categories, labels=list(range(NUM_CLASSES)))
 
-# -*- coding: utf-8 -*-
+# # -*- coding: utf-8 -*-
 
-import seaborn as sn
-import pandas as pd
-import matplotlib.pyplot as plt
-from bidi import algorithm as bidialg
+# import seaborn as sn
+# import pandas as pd
+# import matplotlib.pyplot as plt
+# from bidi import algorithm as bidialg
 
-labels = [bidialg.get_display(name) for name in class_names]
+# labels = [bidialg.get_display(name) for name in class_names]
 
-df_cm = pd.DataFrame(confusion_matrix, index = labels, columns = labels)
-plt.figure(figsize = (3,3))
-sn.heatmap(df_cm, annot=True)
-plt.tight_layout()
-plt.savefig('confusion_matrix.png')
+# df_cm = pd.DataFrame(confusion_matrix, index = labels, columns = labels)
+# plt.figure(figsize = (3,3))
+# sn.heatmap(df_cm, annot=True)
+# plt.tight_layout()
+# plt.savefig('confusion_matrix.png')
 
 
 import innvestigate
@@ -112,7 +112,7 @@ import cv2
 
 tf.compat.v1.disable_eager_execution()
 
-analyzer = innvestigate.create_analyzer("LRP-PresetAFlat", model)
+analyzer = innvestigate.create_analyzer("lrp", model)
 
 img = cv2.imread(address)
 
