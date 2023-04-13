@@ -73,10 +73,11 @@ def build_model():
     )
     return model
 
+callback = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
 model = build_model()
 
 epochs = 50
-hist = model.fit(train_ds, epochs=epochs, validation_data=valid_ds, verbose=1)
+hist = model.fit(train_ds, epochs=epochs, validation_data=valid_ds, callbacks=[callback], verbose=1)
 model.save("kd_effi_v2s.h5")
 
 true_categories = []
