@@ -11,7 +11,7 @@ from tensorflow.keras import layers
 from tensorflow.keras.optimizers import Adam
 from sklearn.metrics import confusion_matrix
 
-
+address = input("image address : ")
 class AttributeDict(dict):
     __getattr__ = dict.__getitem__
     __setattr__ = dict.__setitem__
@@ -105,3 +105,19 @@ plt.figure(figsize = (3,3))
 sn.heatmap(df_cm, annot=True)
 plt.tight_layout()
 plt.savefig('confusion_matrix.png')
+
+
+import innvestigate
+import cv2
+
+tf.compat.v1.disable_eager_execution()
+
+analyzer = innvestigate.create_analyzer("LRP-PresetAFlat", model)
+
+img = cv2.imread(address)
+
+inp = cv2.resize(img, (IMG_SIZE, IMG_SIZE))
+rgb = cv2.cvtColor(inp, cv2.COLOR_BGR2RGB)
+rgb_tensor = tf.convert_to_tensor(rgb, dtype=tf.float32)
+rgb_tensor = tf.expand_dims(rgb_tensor , 0)
+analysis = analyzer.analyze(rgb_tensor)
