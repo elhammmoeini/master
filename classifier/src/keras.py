@@ -17,7 +17,7 @@ class AttributeDict(dict):
     __setattr__ = dict.__setitem__
     __delattr__ = dict.__delitem__
 
-with open("cfg", 'r') as file:
+with open("/content/drive/MyDrive/configs/polyp/configs.yml", 'r') as file:
     configs = yaml.safe_load(file)
 
 configs = AttributeDict(configs)
