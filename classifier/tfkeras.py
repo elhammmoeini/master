@@ -66,8 +66,8 @@ def build_model():
     inputs = layers.Input(shape=(IMG_SIZE, IMG_SIZE, 3))
     x = inputs
     model = EfficientNetV2S(weights="/content/drive/MyDrive/kd_effi_v2s.h5", include_top=True, input_tensor=x, classes=2)
-    # outputs = model.output
-    # model = tf.keras.Model(inputs, outputs, name="kd_effi_v2s")
+    outputs = model.output
+    model = tf.keras.Model(inputs, outputs, name="kd_effi_v2s")
     
     # optimizer = GCAdam(learning_rate=1e-2)
     # model.compile(
