@@ -123,7 +123,7 @@ import cv2, sys
 
 tf.compat.v1.disable_eager_execution()
 # model = innvestigate.model_wo_softmax(model)
-analyzer = innvestigate.analyzer.relevance_based.relevance_analyzer.BaselineLRPZ(model)
+# analyzer = innvestigate.analyzer.relevance_based.relevance_analyzer.BaselineLRPZ(model)
 
 img = cv2.imread(args.img)
 inp = cv2.resize(img, (IMG_SIZE, IMG_SIZE))
