@@ -127,4 +127,4 @@ a = analyzer.analyze(rgb_tensor)
 a = a.sum(axis=np.argmax(np.asarray(a.shape) == 3))
 a /= np.max(np.abs(a))
 # Plot
-plt.imshow(a[0], cmap="seismic", clim=(-1, 1))
+plt.savefig(a[0], cmap="seismic", clim=(-1, 1))
