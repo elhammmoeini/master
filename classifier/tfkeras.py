@@ -11,6 +11,9 @@ from tensorflow.keras import layers
 from tensorflow.keras.optimizers import Adam
 from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
+import sys
+
+print(sys.getrecursionlimit())
 
 
 parser = argparse.ArgumentParser()
