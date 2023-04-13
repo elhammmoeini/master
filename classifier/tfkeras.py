@@ -63,7 +63,7 @@ class GCAdam(Adam):
 def build_model():
     inputs = layers.Input(shape=(IMG_SIZE, IMG_SIZE, 3))
     x = inputs
-    model = EfficientNetV2S(weights=None, include_top=True, input_tensor=x, classes=2)
+    model = EfficientNetV2S(weights="/content/drive/MyDrive/kd_effi_v2s.h5", include_top=True, input_tensor=x, classes=2)
     outputs = model.output
     model = tf.keras.Model(inputs, outputs, name="kd_effi_v2s")
     
@@ -77,8 +77,8 @@ callback = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=5, rest
 model = build_model()
 
 epochs = 50
-hist = model.fit(train_ds, epochs=epochs, validation_data=valid_ds, callbacks=[callback], verbose=1)
-model.save("kd_effi_v2s.h5")
+# hist = model.fit(train_ds, epochs=epochs, validation_data=valid_ds, callbacks=[callback], verbose=1)
+# model.save("kd_effi_v2s.h5")
 
 true_categories = []
 predicted_categories = []
@@ -101,7 +101,7 @@ from bidi import algorithm as bidialg
 labels = [bidialg.get_display(name) for name in class_names]
 
 df_cm = pd.DataFrame(confusion_matrix, index = labels, columns = labels)
-plt.figure(figsize = (40,40))
+plt.figure(figsize = (3,3))
 sn.heatmap(df_cm, annot=True)
 plt.tight_layout()
 plt.savefig('confusion_matrix.png')
