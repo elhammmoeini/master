@@ -77,6 +77,7 @@ def build_model():
     x = inputs
     model = EfficientNetV2S(weights="/content/drive/MyDrive/kd_effi_v2s.h5", include_top=True, input_tensor=x, classes=2)
     model.layers.pop()
+    model.layers.pop()
     # model = EfficientNetV2S(weights="/content/drive/MyDrive/kd_effi_v2s.h5", include_top=False, input_tensor=x)
     outputs = model.output
     model = tf.keras.Model(inputs, outputs, name="kd_effi_v2s")
