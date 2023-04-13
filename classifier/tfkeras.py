@@ -22,7 +22,7 @@ with open("/content/drive/MyDrive/configs/polyp/configs.yml", 'r') as file:
 
 configs = AttributeDict(configs)
 
-batch_size = 32
+batch_size = configs.BATCH_SIZE
 IMG_SIZE = configs.IMAGE_SIZE
 size = (IMG_SIZE, IMG_SIZE)
 
