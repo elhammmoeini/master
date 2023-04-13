@@ -1,6 +1,6 @@
 import os, yaml
 import tensorflow as tf
-from tensorflow.keras.applications import EfficientNetV2S
+from keras.applications import EfficientNetV2S
 import tensorflow_datasets as tfds
 from tqdm import tqdm
 import numpy as np
@@ -117,7 +117,6 @@ model = innvestigate.model_wo_softmax(model)
 analyzer = innvestigate.create_analyzer("deep_taylor", model)
 
 img = cv2.imread(address)
-
 inp = cv2.resize(img, (IMG_SIZE, IMG_SIZE))
 rgb = cv2.cvtColor(inp, cv2.COLOR_BGR2RGB)
 rgb_tensor = tf.convert_to_tensor(rgb, dtype=tf.float32)
