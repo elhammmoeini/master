@@ -121,7 +121,7 @@ model = build_model()
 import innvestigate
 import cv2, sys
 
-tf.compat.v1.disable_eager_execution()
+# tf.compat.v1.disable_eager_execution()
 # model = innvestigate.model_wo_softmax(model)
 # analyzer = innvestigate.analyzer.relevance_based.relevance_analyzer.BaselineLRPZ(model)
 
