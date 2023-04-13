@@ -116,7 +116,7 @@ import innvestigate
 import cv2, sys
 
 tf.compat.v1.disable_eager_execution()
-print(model.layers())
+print(model.layers)
 sys.exit()
 model = innvestigate.model_wo_softmax(model)
 analyzer = innvestigate.create_analyzer("deep_taylor", model)
