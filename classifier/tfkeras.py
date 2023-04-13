@@ -12,7 +12,7 @@ from tensorflow.keras.optimizers import Adam
 from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
 import sys
-sys.setrecursionlimit(10000)
+sys.setrecursionlimit(10000000)
 
 address = input("image address : ")
 class AttributeDict(dict):
