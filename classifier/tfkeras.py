@@ -75,7 +75,8 @@ size = (IMG_SIZE, IMG_SIZE)
 def build_model():
     inputs = layers.Input(shape=(IMG_SIZE, IMG_SIZE, 3))
     x = inputs
-    model = EfficientNetV2S(weights="/content/drive/MyDrive/kd_effi_v2s.h5", include_top=True, input_tensor=x, classes=2)
+    # model = EfficientNetV2S(weights="/content/drive/MyDrive/kd_effi_v2s.h5", include_top=True, input_tensor=x, classes=2)
+    model = EfficientNetV2S(weights="/content/drive/MyDrive/kd_effi_v2s.h5", include_top=False, input_tensor=x)
     outputs = model.output
     model = tf.keras.Model(inputs, outputs, name="kd_effi_v2s")
     
@@ -123,7 +124,7 @@ import innvestigate
 import cv2, sys
 
 tf.compat.v1.disable_eager_execution()
-model = innvestigate.model_wo_softmax(model)
+# model = innvestigate.model_wo_softmax(model)
 analyzer = innvestigate.create_analyzer("deep_taylor", model)
 
 img = cv2.imread(args.img)
