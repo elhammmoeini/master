@@ -63,7 +63,7 @@ class GCAdam(Adam):
 def build_model():
     inputs = layers.Input(shape=(IMG_SIZE, IMG_SIZE, 3))
     x = inputs
-    model = EfficientNetV2S(include_top=True, input_tensor=x, classes=2)
+    model = EfficientNetV2S(weights=None, include_top=True, input_tensor=x, classes=2)
     outputs = model.output
     model = tf.keras.Model(inputs, outputs, name="kd_effi_v2s")
     
