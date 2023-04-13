@@ -65,7 +65,7 @@ def build_model():
     x = inputs
     model = EfficientNetV2S(include_top=True, input_tensor=x)
     outputs = model.output
-
+    print(outputs.shape)
     model = tf.keras.Model(inputs, outputs, name="kd_effi_v2s")
     
     optimizer = GCAdam(learning_rate=1e-2)
