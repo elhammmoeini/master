@@ -36,6 +36,8 @@ class main():
 
     def __init__(self, configs, state="train"):
         self.configs=configs
+        self.device=torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+
 
         if state=="validation":
             self.camapp={}
@@ -327,13 +329,19 @@ class main():
         return ensembled, pred, score
     
     def lrp(self, img):
+        vgg_num=16
         lrp_vgg = self.on_cuda(lrp.convert_vgg(self.model))
         img.requires_grad_(True)
         out = self.model(img)
         out=self.softmax(out)
         score,pred=torch.max(out.data , 1)
-        out_lrp = lrp_vgg.forward(img)
-        print(out_lrp)
+        out_lrp = lrp_vgg.forward(img, explain=True, rule="alpha2beta1")
+        out_lrp = out_lrp[torch.arange(1), out_lrp.max(1)[1]] # Choose maximizing output neuron
+        out_lrp = out_lrp.sum()
+        # Backward pass (do explanation)
+        out_lrp.backward()
+        explanation = img.grad
+        print(explanation)
         sys.exit()
     
     def middle_layer(self, img):
