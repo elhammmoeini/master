@@ -341,7 +341,8 @@ class main():
         # Backward pass (do explanation)
         out_lrp.backward()
         explanation = img.grad
-        print(explanation.shape)
+        image = torchvision.transforms.ToPILImage()(explanation.unsqueeze(0))
+        image.save("test.png")
         sys.exit()
     
     def middle_layer(self, img):
