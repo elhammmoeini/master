@@ -1,4 +1,4 @@
-MODEL: "efficientnet_v2_s"
+MODEL: "vgg16"
 CAM: ["XGradCAM","GradCAM"]
 CAM_PATH: "/content/drive/MyDrive/outputs/polyp"
 SEGMENTS_PATH: "/content/drive/MyDrive/Colab notebooks/polyp/masks"
