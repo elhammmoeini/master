@@ -1,11 +1,16 @@
-import torch, torchvision, os, random, glob, shutil, cv2
+import torch, torchvision, os, random, glob, shutil, cv2, sys
 import numpy as np
 import seaborn as sn
 import pandas as pd
 import matplotlib.pyplot as plt
+import torchcam
+import lrp
 
+from lrp.patterns import fit_patternnet, fit_patternnet_positive # PatternNet patterns
+from utils import store_patterns, load_patterns
+from visualization import project, clip_quantile, heatmap_grid, grid
+from torchcam.utils import overlay_mask
 from tqdm import tqdm
-# from captum.attr import LRP
 from PIL import Image
 from matplotlib.pyplot import imshow
 from torchvision.transforms.functional import to_pil_image
@@ -13,8 +18,6 @@ from torch import nn
 from .utils import CustomDataSet,ToCUDA,clone_weights,weights_checker\
                   ,PrepareData
 from torch.utils.tensorboard import SummaryWriter
-
-writer=SummaryWriter("runs/classification")
 
 class AddLayer(nn.Module):
     
@@ -32,18 +35,17 @@ class main():
         self.configs=configs
 
         if state=="validation":
-            import torchcam
-            from torchcam.utils import overlay_mask
             self.camapp={}
             self.models={}
             for cam_method in self.configs.CAM:
                 self.camapp[cam_method]=getattr(torchcam.methods, cam_method)
                 self.models[cam_method]=self.change_state(state, self.define_and_load_model())
-        if state=="kd":
+        if state=="middle_layer":
             self.model=self.change_state(state, self.define_and_load_model())
-            # print(self.model)
             self.activation={}
             self.RegisterHook()
+        else:
+            self.writer=SummaryWriter("runs/classification")
 
         self.DesiredAccuracy=self.configs.DESIRED_ACCURACY
         self.softmax=self.on_cuda(nn.Softmax(dim=1))
@@ -172,10 +174,10 @@ class main():
                     val_acc, val_L=self.validation_loop(val_loader, Loss_fn)
                     train_acc, train_L=self.validation_loop(train_loader, Loss_fn)
 
-                    writer.add_scalar('Loss/train', train_L, itert)
-                    writer.add_scalar('Loss/validation', val_L, itert)
-                    writer.add_scalar('Accuracy/train', train_acc, itert)
-                    writer.add_scalar('Accuracy/validation', val_acc, itert)
+                    self.writer.add_scalar('Loss/train', train_L, itert)
+                    self.writer.add_scalar('Loss/validation', val_L, itert)
+                    self.writer.add_scalar('Accuracy/train', train_acc, itert)
+                    self.writer.add_scalar('Accuracy/validation', val_acc, itert)
 
                     print('after {} epochs and {} iterations'.format(e,itert) ,
                     'validation accuracy : {} % , validation Loss : {} train accuracy : {} % , train Loss : {}'.format(val_acc,val_L,train_acc,train_L))
@@ -187,7 +189,7 @@ class main():
                                             , self.configs.MODEL,'best.txt') , "w") as f:
                             f.write('accuracy is {} % , Loss is {}'.format(val_acc,val_L))
                             
-                    writer.add_scalar('Learning rate', scheduler.get_last_lr()[0], itert)
+                    self.writer.add_scalar('Learning rate', scheduler.get_last_lr()[0], itert)
                     print("current lr is : ",scheduler.get_last_lr())            
                 scheduler.step()
             if e >=  self.configs.THRESHOLD_EPOCH and optimizer_flag:
@@ -243,7 +245,7 @@ class main():
         self.count=0
 
         if os.path.isfile(inp):
-            self.inference(inp, lbl)
+            self.inference(inp, lbl, self.configs.MODE)
         else:
             results_path=os.path.join(self.configs.CAM_PATH, self.configs.MODEL, "_".join(self.configs.CAM))
             if os.path.isdir(results_path):
@@ -260,7 +262,7 @@ class main():
             for label,subdir in enumerate(subdirs):
                 imgs=glob.glob(os.path.join(inp,subdir,"*"))
                 for img in tqdm(imgs):
-                    pred, score=self.inference(img, label, results_path)
+                    pred, score=self.inference(img, label, self.configs.MODE, results_path)
                     confusion_array[pred, label]+=1
 
             with open(os.path.join(confusion_mat_path,"results.txt"), "w") as f:
@@ -320,7 +322,17 @@ class main():
 
         return ensembled, pred, score
     
-    def inference_kd(self, img):
+    def lrp(self, img):
+        lrp_vgg = lrp.convert_vgg(self.model)
+        img.requires_grad_(True)
+        out = self.model(img)
+        out=self.softmax(out)
+        score,pred=torch.max(out.data , 1)
+        out_lrp = lrp_vgg.forward(img)
+        print(out_lrp)
+        sys.exit()
+    
+    def middle_layer(self, img):
         img_name=os.path.splitext(os.path.basename(img))[0]
         img=Image.open(img)
         img=img.resize(( self.configs.IMAGE_SIZE, self.configs.IMAGE_SIZE))
@@ -335,7 +347,7 @@ class main():
         self.model(img)
         return self.activation["last_pool"]
 
-    def inference(self, img, label, save_path=None):
+    def inference(self, img, label, mode, save_path=None):
         #lrp=LRP(self.model)
         if not save_path:
             os.makedirs(os.path.join(self.configs.CAM_PATH, self.configs.MODEL), exist_ok=True)
@@ -354,7 +366,11 @@ class main():
         else:
             img=PrepareData(img).unsqueeze_(0)
 
-        im, pred, score=self.ensemble_cam(img)
+        if mode=="CAM":
+            im, pred, score=self.ensemble_cam(img)
+        elif mode=="LRP":
+            self.lrp(img)
+            
         if label is not None and not isinstance(label, str):
             if subdirs[label]==self.lbl:
                 mask=glob.glob(os.path.join(self.configs.SEGMENTS_PATH,img_name+".*"))[0]

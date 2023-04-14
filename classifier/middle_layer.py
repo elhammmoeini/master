@@ -20,4 +20,4 @@ cfg = AttributeDict(cfg)
 os.environ["CUDA_VISIBLE_DEVICES"] = f"{cfg.GPU}"
 
 inferencer = main(cfg, "kd")
-print(inferencer.inference_kd(args.img))
+print(inferencer.middle_layer(args.img))
