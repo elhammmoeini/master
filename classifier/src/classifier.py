@@ -327,7 +327,7 @@ class main():
         return ensembled, pred, score
     
     def lrp(self, img):
-        lrp_vgg = lrp.convert_vgg(self.model)
+        lrp_vgg = self.on_cuda(lrp.convert_vgg(self.model))
         img.requires_grad_(True)
         out = self.model(img)
         out=self.softmax(out)
