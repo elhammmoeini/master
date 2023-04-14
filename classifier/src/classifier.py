@@ -342,8 +342,8 @@ class main():
         out_lrp.backward()
         explanation=img.grad.squeeze(0)
         explanation=explanation.detach().cpu().numpy()
-        print(explanation.shape)
         explanation=(explanation - np.min(explanation))/(np.max(explanation) - np.min(explanation))
+        print(explanation.shape)
         explanation*=255
         explanation=explanation.astype("uint32")
         image = Image.fromarray(explanation)
