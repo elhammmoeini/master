@@ -3,7 +3,10 @@ import numpy as np
 import seaborn as sn
 import pandas as pd
 import matplotlib.pyplot as plt
-import torchcam
+import torchcam, pathlib
+
+base_path = pathlib.Path(__file__).parent.absolute()
+sys.path.insert(0, base_path.as_posix())
 import lrp
 
 from lrp.patterns import fit_patternnet, fit_patternnet_positive # PatternNet patterns
@@ -370,7 +373,7 @@ class main():
             im, pred, score=self.ensemble_cam(img)
         elif mode=="LRP":
             self.lrp(img)
-            
+
         if label is not None and not isinstance(label, str):
             if subdirs[label]==self.lbl:
                 mask=glob.glob(os.path.join(self.configs.SEGMENTS_PATH,img_name+".*"))[0]
