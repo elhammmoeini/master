@@ -1,9 +1,8 @@
-import torch, torchvision, os, random, glob, shutil, cv2, sys
+import torch, pathlib, torchvision, os, random, glob, shutil, cv2, sys
 import numpy as np
 import seaborn as sn
 import pandas as pd
 import matplotlib.pyplot as plt
-import torchcam, pathlib
 
 base_path = pathlib.Path(__file__).parent.absolute()
 sys.path.insert(0, base_path.as_posix())
@@ -12,7 +11,8 @@ import lrp
 from lrp.patterns import fit_patternnet, fit_patternnet_positive # PatternNet patterns
 from utils import store_patterns, load_patterns
 from visualization import project, clip_quantile, heatmap_grid, grid
-from torchcam.utils import overlay_mask
+# from torchcam.utils import overlay_mask
+# import torchcam
 from tqdm import tqdm
 from PIL import Image
 from matplotlib.pyplot import imshow

@@ -4,7 +4,7 @@ CAM_PATH: "/content/drive/MyDrive/outputs/polyp"
 SEGMENTS_PATH: "/content/drive/MyDrive/Colab notebooks/polyp/masks"
 CLASSES: 2
 LR: 0.00005
-DESIRED_ACCURACY: 0.99
+DESIRED_ACCURACY: 0.60
 TRANSFER_LEARNING: True
 CHECKPOINT_PATH : "/content/drive/MyDrive/weights/polyp"
 LOAD_CHECKPOINT: True
