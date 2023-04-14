@@ -341,7 +341,7 @@ class main():
         # Backward pass (do explanation)
         out_lrp.backward()
         explanation = img.grad
-        print(explanation)
+        print(explanation.shape)
         sys.exit()
     
     def middle_layer(self, img):
