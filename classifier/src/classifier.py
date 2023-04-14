@@ -340,8 +340,12 @@ class main():
         out_lrp = out_lrp.sum()
         # Backward pass (do explanation)
         out_lrp.backward()
-        explanation = img.grad
-        image = torchvision.transforms.ToPILImage()(explanation.squeeze(0))
+        explanation=img.grad.squeeze(0)
+        explanation=explanation.detach().cpu().numpy()
+        explanation=(explanation - np.min(explanation))/(np.max(explanation) - np.min(explanation))
+        explanation*=255
+        explanation=explanation.astype("uint32")
+        image = Image.fromarray(explanation)
         image.save("test.png")
         sys.exit()
     
