@@ -345,7 +345,7 @@ class main():
         explanation=(explanation - np.min(explanation))/(np.max(explanation) - np.min(explanation))
         explanation=np.transpose(explanation,(1,2,0))
         explanation*=255
-        explanation=explanation.astype("uint32")
+        explanation=explanation.astype("uint8")
         print(explanation.shape)
         image = Image.fromarray(explanation)
         image.save("test.png")
