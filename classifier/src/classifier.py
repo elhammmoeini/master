@@ -341,7 +341,7 @@ class main():
         # Backward pass (do explanation)
         out_lrp.backward()
         explanation = img.grad
-        image = torchvision.transforms.ToPILImage()(explanation.unsqueeze(0))
+        image = torchvision.transforms.ToPILImage()(explanation.squeeze(0))
         image.save("test.png")
         sys.exit()
     
