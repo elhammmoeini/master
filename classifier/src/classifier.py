@@ -40,6 +40,7 @@ class main():
         if state=="validation":
             self.camapp={}
             self.models={}
+            self.model=self.change_state(state, self.define_and_load_model())
             for cam_method in self.configs.CAM:
                 self.camapp[cam_method]=getattr(torchcam.methods, cam_method)
                 self.models[cam_method]=self.change_state(state, self.define_and_load_model())
