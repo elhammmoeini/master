@@ -358,17 +358,13 @@ class main():
             out_lrp.backward()
             explanation=img.grad.squeeze(0)
             explanation=explanation.detach().cpu().numpy()
+            explanation=np.sum(explanation, axis=0)
             explanation=(explanation - np.min(explanation))/(np.max(explanation) - np.min(explanation))
-            explanation=np.transpose(explanation,(1,2,0))
             explanation*=255
             explanation=explanation.astype("uint8")
-            _, _, c=explanation.shape
-            if c==3:
-                image = Image.fromarray(explanation).convert('L')
-                im=np.array(image)
-                im[im>self.configs.HEATMAP_THRESH]=255
-                im[im<=self.configs.HEATMAP_THRESH]=0
-            activations+=[im]
+            explanation[explanation>self.configs.HEATMAP_THRESH]=255
+            explanation[explanation<=self.configs.HEATMAP_THRESH]=0
+            activations+=[explanation]
 
         return self.voter(activations), pred, score
     
