@@ -11,8 +11,8 @@ import lrp
 from lrp.patterns import fit_patternnet, fit_patternnet_positive # PatternNet patterns
 from utils import store_patterns, load_patterns
 from visualization import project, clip_quantile, heatmap_grid, grid
-# from torchcam.utils import overlay_mask
-# import torchcam
+from torchcam.utils import overlay_mask
+import torchcam
 from tqdm import tqdm
 from PIL import Image
 from matplotlib.pyplot import imshow
@@ -38,14 +38,15 @@ class main():
         self.configs=configs
         self.device=torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
-
         if state=="validation":
             self.camapp={}
             self.models={}
-            self.model=self.change_state(state, self.define_and_load_model())
-            # for cam_method in self.configs.CAM:
-            #     self.camapp[cam_method]=getattr(torchcam.methods, cam_method)
-            #     self.models[cam_method]=self.change_state(state, self.define_and_load_model())
+            if self.configs.MODE=="LRP":
+                self.model=self.change_state(state, self.define_and_load_model())
+            elif self.configs.MODE=="CAM":
+                for cam_method in self.configs.CAM:
+                    self.camapp[cam_method]=getattr(torchcam.methods, cam_method)
+                    self.models[cam_method]=self.change_state(state, self.define_and_load_model())
         if state=="middle_layer":
             self.model=self.change_state(state, self.define_and_load_model())
             self.activation={}
@@ -296,7 +297,7 @@ class main():
       h, w=heatmap.shape
       mask=cv2.imread(mask)
       if len(mask.shape) != 2:
-          # print(f"{mask.shape[-1]} channel image, Converting to 1 channel gray ...")
+        #   print(f"{mask.shape[-1]} channel image, Converting to 1 channel gray ...")
           mask=cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
       mask=cv2.resize(mask, (w, h))
 
@@ -335,7 +336,9 @@ class main():
         out = self.model(img)
         out=self.softmax(out)
         score,pred=torch.max(out.data , 1)
-        out_lrp = lrp_vgg.forward(img, explain=True, rule="alpha2beta1")
+        pred=int(pred)
+        score=round(score.item(),2)
+        out_lrp = lrp_vgg.forward(img, explain=True, rule=self.configs.LRP_RULE)
         out_lrp = out_lrp[torch.arange(1), out_lrp.max(1)[1]] # Choose maximizing output neuron
         out_lrp = out_lrp.sum()
         # Backward pass (do explanation)
@@ -346,10 +349,10 @@ class main():
         explanation=np.transpose(explanation,(1,2,0))
         explanation*=255
         explanation=explanation.astype("uint8")
-        print(explanation.shape)
-        image = Image.fromarray(explanation)
-        image.save("test.png")
-        sys.exit()
+        _, _, c=explanation.shape
+        if c==3:
+            image = Image.fromarray(explanation).convert('L')
+        return np.array(image), pred, score
     
     def middle_layer(self, img):
         img_name=os.path.splitext(os.path.basename(img))[0]
@@ -388,7 +391,7 @@ class main():
         if mode=="CAM":
             im, pred, score=self.ensemble_cam(img)
         elif mode=="LRP":
-            self.lrp(img)
+            im, pred, score=self.lrp(img)
 
         if label is not None and not isinstance(label, str):
             if subdirs[label]==self.lbl:
