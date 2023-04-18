@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 
 base_path = pathlib.Path(__file__).parent.absolute()
 sys.path.insert(0, base_path.as_posix())
+
 import lrp
 
 from lrp.patterns import fit_patternnet, fit_patternnet_positive # PatternNet patterns
