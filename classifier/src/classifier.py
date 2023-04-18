@@ -43,7 +43,9 @@ class main():
             self.models={}
             if self.configs.MODE=="LRP":
                 self.model=self.change_state(state, self.define_and_load_model())
+                self.xai_mode=self.configs.LRP_RULE
             elif self.configs.MODE=="CAM":
+                self.xai_mode=self.configs.CAM
                 for cam_method in self.configs.CAM:
                     self.camapp[cam_method]=getattr(torchcam.methods, cam_method)
                     self.models[cam_method]=self.change_state(state, self.define_and_load_model())
@@ -256,10 +258,10 @@ class main():
         else:
             if self.configs.MODE=="LRP":
                 results_path=os.path.join(self.configs.CAM_PATH, \
-                                          self.configs.MODEL, "_".join(self.configs.LRP_RULE))
+                                          self.configs.MODEL, "_".join(self.xai_mode))
             elif self.configs.MODE=="CAM":
                 results_path=os.path.join(self.configs.CAM_PATH, \
-                                          self.configs.MODEL, "_".join(self.configs.CAM))
+                                          self.configs.MODEL, "_".join(self.xai_mode))
             if os.path.isdir(results_path):
                 shutil.rmtree(results_path)
             subdirs=sorted(os.listdir(inp))
@@ -418,9 +420,9 @@ class main():
         if not save_path:
             single_image_path=os.path.join(self.configs.CAM_PATH, self.configs.MODEL, "single_image")
             os.makedirs(single_image_path, exist_ok=True)
-            result.save(os.path.join(single_image_path,f"{img_name}_{label}_{subdirs[pred]}_{'_'.join(self.configs.CAM)}.png"))
+            result.save(os.path.join(single_image_path,f"{img_name}_{label}_{subdirs[pred]}_{'_'.join(self.xai_mode)}.png"))
             print(f"prediction : {subdirs[pred]} - confidence : {score}")
         else:
-            result.save(os.path.join(save_path,f"{img_name}_{subdirs[label]}_{subdirs[pred]}_{'_'.join(self.configs.CAM)}.png"))
+            result.save(os.path.join(save_path,f"{img_name}_{subdirs[label]}_{subdirs[pred]}_{'_'.join(self.xai_mode)}.png"))
             return pred , score
 
