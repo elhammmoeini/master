@@ -364,7 +364,10 @@ class main():
             _, _, c=explanation.shape
             if c==3:
                 image = Image.fromarray(explanation).convert('L')
-            activations+=[np.array(image)]
+                im=np.array(image)
+                im[im>self.configs.HEATMAP_THRESH]=255
+                im[im<=self.configs.HEATMAP_THRESH]=0
+            activations+=[im]
 
         return self.voter(activations), pred, score
     

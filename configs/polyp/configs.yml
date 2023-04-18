@@ -22,5 +22,5 @@ GPU: 0
 HEATMAP_THRESH: 100
 TENSORBOARD: "classification"
 MODE: "LRP"
-LRP_RULE: ["alpha2beta1"]
+LRP_RULE: ["alpha2beta1", "epsilon"]
 VOTING: "OR"
