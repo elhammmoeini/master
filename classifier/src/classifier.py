@@ -256,7 +256,7 @@ class main():
         else:
             if self.configs.MODE=="LRP":
                 results_path=os.path.join(self.configs.CAM_PATH, \
-                                          self.configs.MODEL, self.configs.LRP_RULE)
+                                          self.configs.MODEL, "_".join(self.configs.LRP_RULE))
             elif self.configs.MODE=="CAM":
                 results_path=os.path.join(self.configs.CAM_PATH, \
                                           self.configs.MODEL, "_".join(self.configs.CAM))
@@ -310,6 +310,13 @@ class main():
       union=np.logical_or((mask==255), (heatmap==255)).sum()
       return intersection/union
 
+    def voter(self, inp):
+        h, w=inp[0].shape
+        ensembled=np.zeros((h,w)).astype("uint8")
+        for i in inp:
+            ensembled=np.logical_or((ensembled==255),(i==255)).astype("uint8") * 255
+        return ensembled
+
     def ensemble_cam(self, img):
         
         activations=[]
@@ -328,36 +335,36 @@ class main():
             h, w=im.shape
             activations += [im]
 
-        ensembled=np.zeros((h,w)).astype("uint8")
-        for i in activations:
-            ensembled=np.logical_or((ensembled==255),(i==255)).astype("uint8") * 255
-
-        return ensembled, pred, score
+        return self.voter(activations), pred, score
     
-    def lrp(self, img):
-        vgg_num=16
-        lrp_vgg = self.on_cuda(lrp.convert_vgg(self.model))
-        img.requires_grad_(True)
-        out = self.model(img)
-        out=self.softmax(out)
-        score,pred=torch.max(out.data , 1)
-        pred=int(pred)
-        score=round(score.item(),2)
-        out_lrp = lrp_vgg.forward(img, explain=True, rule=self.configs.LRP_RULE)
-        out_lrp = out_lrp[torch.arange(1), out_lrp.max(1)[1]] # Choose maximizing output neuron
-        out_lrp = out_lrp.sum()
-        # Backward pass (do explanation)
-        out_lrp.backward()
-        explanation=img.grad.squeeze(0)
-        explanation=explanation.detach().cpu().numpy()
-        explanation=(explanation - np.min(explanation))/(np.max(explanation) - np.min(explanation))
-        explanation=np.transpose(explanation,(1,2,0))
-        explanation*=255
-        explanation=explanation.astype("uint8")
-        _, _, c=explanation.shape
-        if c==3:
-            image = Image.fromarray(explanation).convert('L')
-        return np.array(image), pred, score
+    def lrp(self, inp):
+        activations=[]
+        for rule in self.configs.LRP_RULE:
+            img=inp.detach().clone()
+            lrp_vgg = self.on_cuda(lrp.convert_vgg(self.model))
+            img.requires_grad_(True)
+            out=self.model(img)
+            out=self.softmax(out)
+            score,pred=torch.max(out.data , 1)
+            pred=int(pred)
+            score=round(score.item(),2)
+            out_lrp = lrp_vgg.forward(img, explain=True, rule=rule)
+            out_lrp = out_lrp[torch.arange(1), out_lrp.max(1)[1]] # Choose maximizing output neuron
+            out_lrp = out_lrp.sum()
+            # Backward pass (do explanation)
+            out_lrp.backward()
+            explanation=img.grad.squeeze(0)
+            explanation=explanation.detach().cpu().numpy()
+            explanation=(explanation - np.min(explanation))/(np.max(explanation) - np.min(explanation))
+            explanation=np.transpose(explanation,(1,2,0))
+            explanation*=255
+            explanation=explanation.astype("uint8")
+            _, _, c=explanation.shape
+            if c==3:
+                image = Image.fromarray(explanation).convert('L')
+            activations+=[np.array(image)]
+
+        return self.voter(activations), pred, score
     
     def middle_layer(self, img):
         img_name=os.path.splitext(os.path.basename(img))[0]
