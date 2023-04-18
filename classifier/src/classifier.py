@@ -290,7 +290,7 @@ class main():
                     f.write(f"F1 score for {subdirs[idx]} : {round(f1,4)}"+"\n"+"\n") 
 
             with open(os.path.join(confusion_mat_path,"IOU.txt"), "w") as f:
-                f.write(f"Average IOU for {self.configs.CAM} : {round((self.iou_sum/self.count),4)}"+"\n")
+                f.write(f"Average IOU for {self.xai_mode} : {round((self.iou_sum/self.count),4)}"+"\n")
                 f.write(f"Total number of masks : {self.count}")
 
 
