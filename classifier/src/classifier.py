@@ -254,7 +254,12 @@ class main():
         if os.path.isfile(inp):
             self.inference(inp, lbl, self.configs.MODE)
         else:
-            results_path=os.path.join(self.configs.CAM_PATH, self.configs.MODEL, "_".join(self.configs.CAM))
+            if self.configs.MODE=="LRP":
+                results_path=os.path.join(self.configs.CAM_PATH, \
+                                          self.configs.MODEL, self.configs.LRP_RULE)
+            elif self.configs.MODE=="CAM":
+                results_path=os.path.join(self.configs.CAM_PATH, \
+                                          self.configs.MODEL, "_".join(self.configs.CAM))
             if os.path.isdir(results_path):
                 shutil.rmtree(results_path)
             subdirs=sorted(os.listdir(inp))
@@ -263,7 +268,7 @@ class main():
             os.makedirs(confusion_mat_path, exist_ok=True)
 
             if len(subdirs) != self.configs.CLASSES:
-                raise Exception("wrong folder !")
+                raise Exception("wrong input path !")
 
             confusion_array=np.zeros((self.configs.CLASSES, self.configs.CLASSES))
             for label,subdir in enumerate(subdirs):
