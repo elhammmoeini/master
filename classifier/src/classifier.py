@@ -317,7 +317,10 @@ class main():
         h, w=inp[0].shape
         ensembled=np.zeros((h,w)).astype("uint8")
         for i in inp:
-            ensembled=np.logical_or((ensembled==255),(i==255)).astype("uint8") * 255
+            if self.configs.VOTING=="max":
+                ensembled=np.maximum(ensembled, i).astype("uint8")
+            elif self.configs.VOTING=="min":
+                ensembled=np.minimum(ensembled, i).astype("uint8")
         return ensembled
 
     def ensemble_cam(self, img):
@@ -333,8 +336,8 @@ class main():
             im=activation_map[0].squeeze(0).detach().cpu().numpy()
             im=(im - im.min()) / (im.max() - im.min()) #to normalize
             im=(im * 255).astype(np.uint8)
-            im[im>self.configs.HEATMAP_THRESH]=255
-            im[im<=self.configs.HEATMAP_THRESH]=0
+            # im[im>self.configs.HEATMAP_THRESH]=255
+            # im[im<=self.configs.HEATMAP_THRESH]=0
             h, w=im.shape
             activations += [im]
 
@@ -362,8 +365,8 @@ class main():
             explanation=(explanation - np.min(explanation))/(np.max(explanation) - np.min(explanation))
             explanation*=255
             explanation=explanation.astype("uint8")
-            explanation[explanation>self.configs.HEATMAP_THRESH]=255
-            explanation[explanation<=self.configs.HEATMAP_THRESH]=0
+            # explanation[explanation>self.configs.HEATMAP_THRESH]=255
+            # explanation[explanation<=self.configs.HEATMAP_THRESH]=0
             activations+=[explanation]
 
         return self.voter(activations), pred, score

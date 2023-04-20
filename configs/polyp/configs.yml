@@ -1,5 +1,5 @@
 MODEL: "vgg16"
-CAM: ["GradCAM"]
+CAM: ["GradCAM"] # refer to https://github.com/frgfm/torch-cam
 CAM_PATH: "/home/arisa/x_ai/outputs/polyp"
 SEGMENTS_PATH: "/home/arisa/x_ai/dataset/polyp/masks"
 CLASSES: 2
@@ -20,7 +20,7 @@ T_MAX_COEFFICIENT: 10
 BASE_LR: 0.000000000001
 GPU: 0
 HEATMAP_THRESH: 100
-TENSORBOARD: "classification"
-MODE: "LRP"
-LRP_RULE: ["alpha2beta1", "epsilon"]
-VOTING: "OR"
+TENSORBOARD: "classification" # address to save runs
+MODE: "LRP" # choose from 'LRP', 'CAM', 'MIX'
+LRP_RULE: ["alpha2beta1", "epsilon"] # refer to https://github.com/fhvilshoj/TorchLRP
+VOTING: "max" # choose from 'min', 'max'
