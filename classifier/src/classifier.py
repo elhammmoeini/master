@@ -330,6 +330,7 @@ class main():
         
         activations=[]
         img = img.detach().clone()
+        _,_,h,w = img.shape
         for cam_method in self.camapp:
             out=self.models[cam_method](img)
             out=self.softmax(out)
@@ -340,6 +341,8 @@ class main():
             im=activation_map[0].squeeze(0).detach().cpu().numpy()
             im=(im - im.min()) / (im.max() - im.min()) #to normalize
             im=(im * 255).astype(np.uint8)
+            im=cv2.resize(im, (h, w),
+               interpolation = cv2.INTER_CUBIC)
             # im[im>self.configs.HEATMAP_THRESH]=255
             # im[im<=self.configs.HEATMAP_THRESH]=0
             h, w=im.shape
