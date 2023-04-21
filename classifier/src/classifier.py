@@ -50,6 +50,13 @@ class main():
                 for cam_method in self.configs.CAM:
                     self.camapp[cam_method]=getattr(torchcam.methods, cam_method)
                     self.models[cam_method]=self.change_state(state, self.define_and_load_model())
+            elif self.configs.MODE=="MIX":
+                self.model=self.change_state(state, self.define_and_load_model())
+                self.xai_mode=self.configs.LRP_RULE + self.configs.CAM
+                for cam_method in self.configs.CAM:
+                    self.camapp[cam_method]=getattr(torchcam.methods, cam_method)
+                    self.models[cam_method]=self.change_state(state, self.define_and_load_model())
+
         if state=="middle_layer":
             self.model=self.change_state(state, self.define_and_load_model())
             self.activation={}
@@ -257,11 +264,7 @@ class main():
         if os.path.isfile(inp):
             self.inference(inp, lbl, self.configs.MODE)
         else:
-            if self.configs.MODE=="LRP":
-                results_path=os.path.join(self.configs.CAM_PATH, \
-                                          self.configs.MODEL, "_".join(self.xai_mode))
-            elif self.configs.MODE=="CAM":
-                results_path=os.path.join(self.configs.CAM_PATH, \
+            results_path=os.path.join(self.configs.CAM_PATH, \
                                           self.configs.MODEL, "_".join(self.xai_mode))
             if os.path.isdir(results_path):
                 shutil.rmtree(results_path)
@@ -326,6 +329,7 @@ class main():
     def ensemble_cam(self, img):
         
         activations=[]
+        img = img.detach().clone()
         for cam_method in self.camapp:
             out=self.models[cam_method](img)
             out=self.softmax(out)
@@ -409,6 +413,10 @@ class main():
             im, pred, score=self.ensemble_cam(img)
         elif mode=="LRP":
             im, pred, score=self.lrp(img)
+        elif mode=="MIX":
+            im_cam, pred, score=self.ensemble_cam(img)
+            im_lrp, _, _=self.lrp(img)
+            im = self.voter([im_cam, im_lrp])
 
         if label is not None and not isinstance(label, str):
             if subdirs[label]==self.lbl:
